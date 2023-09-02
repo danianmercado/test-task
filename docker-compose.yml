@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  nginx-service:
+    image: nginx:stable-alpine
+    container_name: nginx-container
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app:/var/www/project
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php-service
+      - mysql-service
+    networks:
+      - test-task
+  php-service:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    container_name: php-container
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./app:/var/www/project
+    networks:
+      - test-task
+  php-cli:
+    container_name: php-cli-container
+    build:
+      context: .
+      dockerfile: ./docker/php-cli/Dockerfile
+    volumes:
+      - ./app:/var/www/project
+    networks:
+      - test-task
+
+  mysql-service:
+    image: mysql:8
+    container_name: mysql-container
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker/mysql:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_PASSWORD: secret
+    networks:
+      - test-task
+networks:
+  test-task:
