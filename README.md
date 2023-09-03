@@ -9,6 +9,14 @@ https://spb.hh.ru/resume/f2a4adfcff0b108cb50039ed1f5a306e59495a
 __Link to the test:__ 
 https://github.com/systemeio/test-for-candidates
 
+## Pay endpoint
+
+localhost:8080/api/pay
+
+## Price calculation endpoint
+
+localhost:8080/api/price_calculation
+
 ## Design Patterns used
  - Factory
  - Adapter
