@@ -42,11 +42,9 @@ class PaymentController extends ApiController
     {
         try {
             $this->processPayRequest($request);
-            if($this->processPayment())
-            {
+            if ($this->processPayment()) {
                 return $this->jsonSuccess("Payment has been successfully processed.");
-            }
-            else{
+            } else {
                 return $this->jsonError(json_encode("Payment error"));
             }
         } catch (\Exception $exception) {
@@ -80,18 +78,22 @@ class PaymentController extends ApiController
 
     private function getTotalAmount()
     {
-        $data = $this->getRequestData();
-        return $this->priceCalculator->calculatePrice(
-            $data['product'],
-            $data['taxNumber'],
-            $data['couponCode'] ?? null
-        );
+        try {
+            $data = $this->getRequestData();
+            return $this->priceCalculator->calculatePrice(
+                $data['product'],
+                $data['taxNumber'],
+                $data['couponCode'] ?? null
+            );
+        } catch (\Exception $exception) {
+            throw new \Exception(json_encode($exception->getMessage()));
+        }
     }
 
     private function processPayment()
     {
         $data = $this->getRequestData();
-        $total = (int) $this->getTotalAmount() / 100;
+        $total = (int) ($this->getTotalAmount() * 100);
         try {
             $paymentResult = $this->paymentService->processPayment($data['paymentProcessor'], $total);
             return $paymentResult;

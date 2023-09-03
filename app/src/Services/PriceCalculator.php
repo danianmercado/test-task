@@ -25,16 +25,22 @@ class PriceCalculator
 
     public function calculatePrice(int $productId, string $taxNumber, ?string $couponCode): float
     {
-        $product = $this->entityManager->getRepository(Product::class)->find($productId);
-        $priceAfterDiscount = $product->getPrice();
+        try {
+            $product = $this->entityManager->getRepository(Product::class)->find($productId);
+            $priceAfterDiscount = $product->getPrice();
 
-        if ($couponCode) {
-            $priceAfterDiscount = $this->discountApplier->applyDiscount($product->getPrice(), $couponCode);
+            if ($couponCode) {
+                $priceAfterDiscount = $this->discountApplier->applyDiscount($product->getPrice(), $couponCode);
+            }
+            $taxCalculator = $this->taxCalculatorFactory->createCalculator($taxNumber);
+            $taxAmount = $taxCalculator->calculateTax($priceAfterDiscount);
+            $totalPrice = $priceAfterDiscount + $taxAmount;
+            if ($totalPrice < 0) {
+                throw new \InvalidArgumentException("Total price value cant be negative");
+            }
+            return $totalPrice;
+        } catch (\Exception $exception) {
+            throw new \Exception($exception->getMessage());
         }
-        $taxCalculator = $this->taxCalculatorFactory->createCalculator($taxNumber);
-        $taxAmount = $taxCalculator->calculateTax($priceAfterDiscount);
-        $totalPrice = $priceAfterDiscount + $taxAmount;
-
-        return $totalPrice;
     }
 }
