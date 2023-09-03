@@ -1,8 +1,13 @@
 # Test Task for SystemeIO
 __author:__ @danianmercado
+
 __telegram:__ @danianmercado
-__link to resume:__ https://spb.hh.ru/resume/f2a4adfcff0b108cb50039ed1f5a306e59495a
-__Link to the test:__ https://github.com/systemeio/test-for-candidates
+
+__link to resume:__ 
+https://spb.hh.ru/resume/f2a4adfcff0b108cb50039ed1f5a306e59495a
+
+__Link to the test:__ 
+https://github.com/systemeio/test-for-candidates
 
 ## Design Patterns used
  - Factory
