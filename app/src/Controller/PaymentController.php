@@ -5,6 +5,9 @@ namespace App\Controller;
 use App\Controller\ApiController;
 use App\Form\CalculationForm;
 use App\Form\DataValidator\CalculationType;
+use App\Form\DataValidator\PayType;
+use App\Form\PayForm;
+use App\Services\PaymentProcessor\PaymentService;
 use App\Services\PriceCalculator;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,10 +18,12 @@ class PaymentController extends ApiController
 {
     private $formFactory;
     private $priceCalculator;
-    public function __construct(FormFactoryInterface $formFactory, PriceCalculator $priceCalculator)
+    private $paymentService;
+    public function __construct(FormFactoryInterface $formFactory, PriceCalculator $priceCalculator, PaymentService $paymentService)
     {
         $this->formFactory = $formFactory;
         $this->priceCalculator = $priceCalculator;
+        $this->paymentService = $paymentService;
     }
 
     #[Route('/api/price_calculation', name: 'price_calculation', methods: ['POST'])]
@@ -28,7 +33,24 @@ class PaymentController extends ApiController
             $this->processCalculationRequest($request);
             return $this->jsonSuccess("Total amount of product is {$this->getTotalAmount()}");
         } catch (\Exception $exception) {
-            dd($exception->getMessage());
+            return $this->jsonError($exception->getMessage());
+        }
+    }
+
+    #[Route('/api/pay', name: 'pay', methods: ['POST'])]
+    public function pay(Request $request): JsonResponse
+    {
+        try {
+            $this->processPayRequest($request);
+            if($this->processPayment())
+            {
+                return $this->jsonSuccess("Payment has been successfully processed.");
+            }
+            else{
+                return $this->jsonError(json_encode("Payment error"));
+            }
+        } catch (\Exception $exception) {
+            // dd($exception->getMessage());
             return $this->jsonError($exception->getMessage());
         }
     }
@@ -45,6 +67,18 @@ class PaymentController extends ApiController
         }
     }
 
+    private function processPayRequest(Request $request)
+    {
+        $this->setRequestData($request)
+            ->setDataValidator(PayType::class)
+            ->setForm(PayForm::class)
+            ->formHandler();
+
+        if ($this->errorExists()) {
+            throw new \Exception(json_encode($this->getErrors(), JSON_UNESCAPED_UNICODE), 400);
+        }
+    }
+
     private function getTotalAmount()
     {
         $data = $this->getRequestData();
@@ -53,5 +87,17 @@ class PaymentController extends ApiController
             $data['taxNumber'],
             $data['couponCode'] ?? null
         );
+    }
+
+    private function processPayment()
+    {
+        $data = $this->getRequestData();
+        $total = (int) $this->getTotalAmount() / 100;
+        try {
+            $paymentResult = $this->paymentService->processPayment($data['paymentProcessor'], $total);
+            return $paymentResult;
+        } catch (\Exception $e) {
+            throw new \Exception(json_encode($e->getMessage(), JSON_UNESCAPED_UNICODE), 400);
+        }
     }
 }
