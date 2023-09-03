@@ -9,6 +9,10 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN  curl -sS https://get.symfony.com/cli/installer | bash \
     &&   mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
 
+RUN curl -sS https://phar.phpunit.de/phpunit-9.6.phar -o /usr/local/bin/phpunit
+
+RUN chmod +x /usr/local/bin/phpunit
+
 RUN groupadd -g 1000 appuser && useradd -r -u 1000 -g appuser appuser
 
 RUN mkdir -p /home/appuser/.composer/cache/repo/https---asset-packagist.org \

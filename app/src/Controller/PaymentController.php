@@ -50,7 +50,6 @@ class PaymentController extends ApiController
                 return $this->jsonError(json_encode("Payment error"));
             }
         } catch (\Exception $exception) {
-            // dd($exception->getMessage());
             return $this->jsonError($exception->getMessage());
         }
     }
