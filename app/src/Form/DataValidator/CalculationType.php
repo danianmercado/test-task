@@ -2,6 +2,7 @@
 
 namespace App\Form\DataValidator;
 
+use App\Validator\Coupon\CouponActive;
 use App\Validator\Coupon\CouponExists;
 use App\Validator\Product\ProductExists;
 use App\Validator\TaxNumber\TaxNumberFormat;
@@ -27,6 +28,7 @@ class CalculationType
 
     #[Assert\Sequentially([
         new CouponExists,
+        new CouponActive
     ])]
 
     public string|null $couponCode;

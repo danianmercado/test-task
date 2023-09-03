@@ -18,12 +18,6 @@ class CouponFixtures extends Fixture
                 'is_active' => 1
             ],
             [
-                'code' => 'D15655',
-                'type' => 'discount',
-                'value' => 20,
-                'is_active' => 1
-            ],
-            [
                 'code' => 'D15656',
                 'type' => 'discount',
                 'value' => 5,
@@ -33,7 +27,7 @@ class CouponFixtures extends Fixture
                 'code' => 'D15655',
                 'type' => 'discount',
                 'value' => 20,
-                'is_active' => 1
+                'is_active' => 0
             ],
             [
                 'code' => 'P15657',
@@ -45,7 +39,7 @@ class CouponFixtures extends Fixture
                 'code' => 'P15658',
                 'type' => 'percentage',
                 'value' => 9,
-                'is_active' => 1
+                'is_active' => 0
             ],
         ];
 

@@ -26,8 +26,6 @@ class PaymentController extends ApiController
             $this->processCalculationRequest($request);
             return $this->jsonSuccess("Total amount of product is {$this->getTotalAmount()}");
         } catch (\Exception $exception) {
-            dd($exception->getMessage());
-            // return $this->jsonError(json_encode($exception->getMessage()));
             return $this->jsonError($exception->getMessage());
         }
     }
