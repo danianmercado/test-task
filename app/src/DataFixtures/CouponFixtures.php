@@ -13,19 +13,19 @@ class CouponFixtures extends Fixture
         $coupons = [
             [
                 'code' => 'D15654',
-                'type' => 'discount',
+                'type' => 'fixed',
                 'value' => 50,
                 'is_active' => 1
             ],
             [
                 'code' => 'D15656',
-                'type' => 'discount',
+                'type' => 'fixed',
                 'value' => 5,
                 'is_active' => 1
             ],
             [
                 'code' => 'D15655',
-                'type' => 'discount',
+                'type' => 'fixed',
                 'value' => 20,
                 'is_active' => 0
             ],

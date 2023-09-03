@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Controller\ApiController;
 use App\Form\CalculationForm;
 use App\Form\DataValidator\CalculationType;
+use App\Services\PriceCalculator;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,10 +14,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class PaymentController extends ApiController
 {
     private $formFactory;
-
-    public function __construct(FormFactoryInterface $formFactory)
+    private $priceCalculator;
+    public function __construct(FormFactoryInterface $formFactory, PriceCalculator $priceCalculator)
     {
         $this->formFactory = $formFactory;
+        $this->priceCalculator = $priceCalculator;
     }
 
     #[Route('/api/price_calculation', name: 'price_calculation', methods: ['POST'])]
@@ -26,6 +28,7 @@ class PaymentController extends ApiController
             $this->processCalculationRequest($request);
             return $this->jsonSuccess("Total amount of product is {$this->getTotalAmount()}");
         } catch (\Exception $exception) {
+            dd($exception->getMessage());
             return $this->jsonError($exception->getMessage());
         }
     }
@@ -44,12 +47,11 @@ class PaymentController extends ApiController
 
     private function getTotalAmount()
     {
-        return 8;
-        // $data = $this->getRequestData();
-
-        // return $this->amountCalculationHandler->setProduct($data['product'])
-        //     ->setCouponCode($data['couponCode'] ?? null)
-        //     ->setTaxNumber($data['taxNumber'])
-        //     ->calculation();
+        $data = $this->getRequestData();
+        return $this->priceCalculator->calculatePrice(
+            $data['product'],
+            $data['taxNumber'],
+            $data['couponCode'] ?? null
+        );
     }
 }

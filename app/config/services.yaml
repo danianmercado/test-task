@@ -6,6 +6,19 @@
 parameters:
 
 services:
+    App\Services\Discounts\FixedDiscountHandler: ~
+    App\Services\Discounts\PercentageDiscountHandler: ~
+    
+    App\Services\Taxes\TaxCalculatorFactory: ~
+
+    App\Services\Discounts\DiscountApplier:
+        arguments:
+            - [ '@App\Services\Discounts\FixedDiscountHandler', '@App\Services\Discounts\PercentageDiscountHandler' ]
+
+    App\Services\PriceCalculator:
+        arguments:
+            $taxCalculatorFactory: '@App\Services\Taxes\TaxCalculatorFactory'
+            $discountApplier: '@App\Services\Discounts\DiscountApplier'
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
